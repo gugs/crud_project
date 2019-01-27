@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
+from flask import Flask, render_template, request, redirect
+from flask import jsonify, url_for, flash
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Catalog, CatalogItem, User
@@ -19,7 +20,10 @@ CLIENT_ID = json.loads(
 APPLICATION_NAME = "Restaurant Menu Application"
 
 # Connect to Database and create database session
-engine = create_engine('sqlite:///catalogproject.db', connect_args={'check_same_thread': False})
+engine = create_engine(
+    'sqlite:///catalogproject.db',
+    connect_args={
+        'check_same_thread': False})
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
@@ -45,7 +49,6 @@ def fbconnect():
     access_token = request.data
     print "access token received %s " % access_token
 
-
     app_id = json.loads(open('fb_client_secrets.json', 'r').read())[
         'web']['app_id']
     app_secret = json.loads(
@@ -54,7 +57,6 @@ def fbconnect():
         app_id, app_secret, access_token)
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
-
 
     # Use token to get user info from API
     userinfo_url = "https://graph.facebook.com/v2.8/me"
@@ -113,7 +115,8 @@ def fbdisconnect():
     facebook_id = login_session['facebook_id']
     # The access token must me included to successfully logout
     access_token = login_session['access_token']
-    url = 'https://graph.facebook.com/%s/permissions?access_token=%s' % (facebook_id,access_token)
+    url = 'https://graph.facebook.com/%s/permissions?access_token=%s' % (
+        facebook_id, access_token)
     h = httplib2.Http()
     result = h.request(url, 'DELETE')[1]
     return "you have been logged out"
@@ -171,8 +174,8 @@ def gconnect():
     stored_access_token = login_session.get('access_token')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
+        response = make_response(
+            json.dumps('Current user is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -231,7 +234,7 @@ def getUserID(email):
     try:
         user = session.query(User).filter_by(email=email).one()
         return user.id
-    except:
+    except BaseException:
         return None
 
 # DISCONNECT - Revoke a current user's token and reset their login_session
@@ -254,7 +257,10 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
-        response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+        response = make_response(
+            json.dumps(
+                'Failed to revoke token for given user.',
+                400))
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -289,7 +295,8 @@ def showCatalogs():
         return render_template('publiccatalog.html', catalogs=catalogs)
     else:
         return render_template('catalog.html', catalogs=catalogs)
-    
+
+
 @app.route('/catalog/<int:catalog_id>/')
 @app.route('/catalog/<int:catalog_id>/item/')
 def showItem(catalog_id):
@@ -298,9 +305,17 @@ def showItem(catalog_id):
     items = session.query(CatalogItem).filter_by(
         catalog_id=catalog_id).all()
     if 'username' not in login_session or creator.id != login_session['user_id']:
-        return render_template('publicmenu.html', items=items, catalog=catalog, creator=creator)
+        return render_template(
+            'publicmenu.html',
+            items=items,
+            catalog=catalog,
+            creator=creator)
     else:
-        return render_template('menu.html', items=items, catalog=catalog, creator=creator)
+        return render_template(
+            'menu.html',
+            items=items,
+            catalog=catalog,
+            creator=creator)
 
 
 # Create a new catalog
@@ -318,7 +333,7 @@ def newCatalog():
         return redirect(url_for('showCatalogs'))
     else:
         return render_template('newcatalog.html')
-    
+
 # Edit a restaurant
 
 
@@ -336,8 +351,8 @@ def editCatalog(catalog_id):
             return redirect(url_for('showCatalogs'))
     else:
         return render_template('editCatalog.html', catalog=editedCatalog)
-    
-    
+
+
 # Delete a catalog
 
 @app.route('/catalog/<int:catalog_id>/delete/', methods=['GET', 'POST'])
@@ -355,8 +370,9 @@ def deleteCatalog(catalog_id):
         return redirect(url_for('showCatalogs', catalog_id=catalog_id))
     else:
         return render_template('deleteCatalog.html', catalog=catalogToDelete)
-    
+
 # Create a new menu item
+
 
 @app.route('/catalog/<int:catalog_id>/item/new/', methods=['GET', 'POST'])
 def newCatalogItem(catalog_id):
@@ -366,8 +382,11 @@ def newCatalogItem(catalog_id):
     if login_session['user_id'] != catalog.user_id:
         return "<script>function myFunction() {alert('You are not authorized to add menu items to this restaurant. Please create your own restaurant in order to add items.');}</script><body onload='myFunction()'>"
     if request.method == 'POST':
-        newItem = CatalogItem(name=request.form['name'], description=request.form['description'],
-                                  catalog_id=catalog_id, user_id=catalog.user_id)
+        newItem = CatalogItem(
+            name=request.form['name'],
+            description=request.form['description'],
+            catalog_id=catalog_id,
+            user_id=catalog.user_id)
         session.add(newItem)
         session.commit()
         # flash('New Menu %s Item Successfully Created' % (newItem.name))
@@ -377,7 +396,12 @@ def newCatalogItem(catalog_id):
 
 # Edit a item from catalog
 
-@app.route('/catalog/<int:catalog_id>/item/<int:item_id>/edit', methods=['GET', 'POST'])
+
+@app.route(
+    '/catalog/<int:catalog_id>/item/<int:item_id>/edit',
+    methods=[
+        'GET',
+        'POST'])
 def editMenuItem(catalog_id, item_id):
     if 'username' not in login_session:
         return redirect('/login')
@@ -395,13 +419,21 @@ def editMenuItem(catalog_id, item_id):
         flash("Catalog's Item Successfully Edited")
         return redirect(url_for('showItem', catalog_id=catalog_id))
     else:
-        return render_template('editcatalogitem.html', catalog_id=catalog_id, item_id=item_id, item=editedItem)
-    
+        return render_template(
+            'editcatalogitem.html',
+            catalog_id=catalog_id,
+            item_id=item_id,
+            item=editedItem)
+
 
 # Delete a menu item
 
 
-@app.route('/catalog/<int:catalog_id>/item/<int:item_id>/delete', methods=['GET', 'POST'])
+@app.route(
+    '/catalog/<int:catalog_id>/item/<int:item_id>/delete',
+    methods=[
+        'GET',
+        'POST'])
 def deleteCatalogItem(catalog_id, item_id):
     if 'username' not in login_session:
         return redirect('/login')
@@ -416,8 +448,7 @@ def deleteCatalogItem(catalog_id, item_id):
         return redirect(url_for('showCatalogs', catalog_id=catalog_id))
     else:
         return render_template('deleteCatalogItem.html', item=itemToDelete)
-    
-    
+
 
 # Disconnect based on provider
 @app.route('/disconnect')

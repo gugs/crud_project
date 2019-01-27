@@ -20,48 +20,62 @@ session = DBSession()
 
 
 # Create dummy user
-User1 = User(name="Robo Barista", email="tinnyTim@udacity.com",
-             picture='https://pbs.twimg.com/profile_images/2671170543/18debd694829ed78203a5a36dd364160_400x400.png')
+User1 = User(
+    name="Gustavo Nobrega",
+    email="gustavo@g.com",
+    picture='https://t2.ftcdn.net/jpg/02/26/55/01/400_F_226550110_yfI6YiSgx35Xd49x6WY76v0Y2h0U6jgu.jpg')
 session.add(User1)
 session.commit()
 
 # Menu for UrbanBurger
-restaurant1 = Catalog(user_id=1, name="Sport")
+catalog1 = Catalog(user_id=1, name="Esporte")
 
-session.add(restaurant1)
+session.add(catalog1)
 session.commit()
 
-menuItem2 = CatalogItem(user_id=1, name="Footbal", description="Juicy grilled veggie patty with tomato mayo and lettuce",
-                     catalog=restaurant1)
+catalogItem2 = CatalogItem(
+    user_id=1,
+    name="Futebol",
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    catalog=catalog1)
 
-session.add(menuItem2)
+session.add(catalogItem2)
 session.commit()
 
 
-menuItem1 = CatalogItem(user_id=1, name="Voleyball", description="with garlic and parmesan",
-                     catalog=restaurant1)
+catalogItem1 = CatalogItem(
+    user_id=1,
+    name="Voleybol",
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
+    catalog=catalog1)
 
-session.add(menuItem1)
+session.add(catalogItem1)
 session.commit()
 
 
 # Menu for Super Stir Fry
-restaurant2 = Catalog(user_id=1, name="Cars")
+catalog2 = Catalog(user_id=1, name="Carros")
 
-session.add(restaurant2)
+session.add(catalog2)
 session.commit()
 
 
-menuItem1 = CatalogItem(user_id=1, name="Ferrari", description="With your choice of noodles vegetables and sauces",
-                     catalog=restaurant2)
+catalogItem3 = CatalogItem(
+    user_id=1,
+    name="Ferrari",
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
+    catalog=catalog2)
 
-session.add(menuItem1)
+session.add(catalogItem3)
 session.commit()
 
-menuItem2 = CatalogItem(user_id=1, name="Porsche", description=" A famous duck dish asdfasdf ...", 
-                     catalog=restaurant2)
+catalogItem4 = CatalogItem(
+    user_id=1,
+    name="Porsche",
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
+    catalog=catalog2)
 
-session.add(menuItem2)
+session.add(catalogItem4)
 session.commit()
 
-print "added menu items!"
+print "added items!"
