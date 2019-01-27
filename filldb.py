@@ -20,47 +20,48 @@ session = DBSession()
 
 
 # Create dummy user
-User1 = User(name="gustavo", email="gustavo@g.com",
+User1 = User(name="Robo Barista", email="tinnyTim@udacity.com",
              picture='https://pbs.twimg.com/profile_images/2671170543/18debd694829ed78203a5a36dd364160_400x400.png')
 session.add(User1)
 session.commit()
 
-User2 = User(name="thiago", email="thiago@g.com",
-             picture='https://pbs.twimg.com/profile_images/2671170543/18debd694829ed78203a5a36dd364160_400x400.png')
-session.add(User2)
+# Menu for UrbanBurger
+restaurant1 = Catalog(user_id=1, name="Sport")
+
+session.add(restaurant1)
 session.commit()
 
-# Catalog for Sports
-catalog1 = Catalog(user_id=1, name="Sports")
+menuItem2 = CatalogItem(user_id=1, name="Footbal", description="Juicy grilled veggie patty with tomato mayo and lettuce",
+                     catalog=restaurant1)
 
-session.add(catalog1)
-session.commit()
-
-catalogItem1 = CatalogItem(user_id=1, name="Football", description="Football bla-bla and etc etc...",
-                     catalog=catalog1)
-
-session.add(catalogItem1)
+session.add(menuItem2)
 session.commit()
 
 
-catalogItem2 = CatalogItem(user_id=1, name="Basquet Ball", description="Jordan is the best player...",
-                     catalog=catalog1)
+menuItem1 = CatalogItem(user_id=1, name="Voleyball", description="with garlic and parmesan",
+                     catalog=restaurant1)
 
-session.add(catalogItem2)
+session.add(menuItem1)
 session.commit()
 
 
-# Catalog for Cars
-catalog2 = Catalog(user_id=1, name="Cars")
+# Menu for Super Stir Fry
+restaurant2 = Catalog(user_id=1, name="Cars")
 
-session.add(catalog2)
+session.add(restaurant2)
 session.commit()
 
 
-catalogItem3 = CatalogItem(user_id=2, name="Ferrari", description="Manufactory process is in Italy",
-                     catalog=catalog2)
+menuItem1 = CatalogItem(user_id=1, name="Ferrari", description="With your choice of noodles vegetables and sauces",
+                     catalog=restaurant2)
 
-session.add(catalogItem3)
+session.add(menuItem1)
+session.commit()
+
+menuItem2 = CatalogItem(user_id=1, name="Porsche", description=" A famous duck dish asdfasdf ...", 
+                     catalog=restaurant2)
+
+session.add(menuItem2)
 session.commit()
 
 print "added menu items!"

@@ -55,5 +55,4 @@ class CatalogItem(Base):
 
 engine = create_engine('sqlite:///catalogproject.db')
 
-
 Base.metadata.create_all(engine)
