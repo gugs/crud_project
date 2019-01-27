@@ -370,7 +370,6 @@ def newCatalogItem(catalog_id):
                                   catalog_id=catalog_id, user_id=catalog.user_id)
         session.add(newItem)
         session.commit()
-        print "###################### Cheguei"
         # flash('New Menu %s Item Successfully Created' % (newItem.name))
         return redirect(url_for('showItem', catalog_id=catalog_id))
     else:
@@ -397,6 +396,28 @@ def editMenuItem(catalog_id, item_id):
         return redirect(url_for('showMenu', catalog_id=catalog_id))
     else:
         return render_template('editcatalogitem.html', catalog_id=catalog_id, item_id=item_id, item=editedItem)
+    
+
+# Delete a menu item
+
+
+@app.route('/catalog/<int:catalog_id>/item/<int:item_id>/delete', methods=['GET', 'POST'])
+def deleteCatalogItem(catalog_id, item_id):
+    if 'username' not in login_session:
+        return redirect('/login')
+    catalog = session.query(Catalog).filter_by(id=catalog_id).one()
+    itemToDelete = session.query(CatalogItem).filter_by(id=item_id).one()
+    if login_session['user_id'] != catalog.user_id:
+        return "<script>function myFunction() {alert('You are not authorized to delete catalog's items to this Catalog. Please create your own Catalog in order to delete items.');}</script><body onload='myFunction()'>"
+    if request.method == 'POST':
+        session.delete(itemToDelete)
+        session.commit()
+        flash("Catalog's Item Successfully Deleted")
+        return redirect(url_for('showCatalogs', catalog_id=catalog_id))
+    else:
+        return render_template('deleteCatalogItem.html', item=itemToDelete)
+    
+    
 
 # Disconnect based on provider
 @app.route('/disconnect')
