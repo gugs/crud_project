@@ -5,6 +5,8 @@ from sqlalchemy import create_engine
 
 Base = declarative_base()
 
+# Class User and its Mapping
+
 
 class User(Base):
     __tablename__ = 'user'
@@ -13,6 +15,8 @@ class User(Base):
     name = Column(String(250), nullable=False)
     email = Column(String(250), nullable=False)
     picture = Column(String(250))
+
+# Class Catalog and its Mapping
 
 
 class Catalog(Base):
@@ -30,6 +34,8 @@ class Catalog(Base):
             'name': self.name,
             'id': self.id,
         }
+
+# Class CatalogItem and its Mapping
 
 
 class CatalogItem(Base):

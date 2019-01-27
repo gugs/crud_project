@@ -265,7 +265,9 @@ def gdisconnect():
         return response
 
 
-# JSON APIs to view Restaurant Information
+# JSON APIs to view Catalog Information
+
+
 @app.route('/catalog/<int:catalog_id>/items/JSON')
 def restaurantMenuJSON(catalog_id):
     catalog = session.query(Catalog).filter_by(id=catalog_id).one()
@@ -286,7 +288,9 @@ def catalogsJSON():
     return jsonify(catalogs=[c.serialize for c in catalogs])
 
 
-# Show all restaurants
+# Show all Catalogs
+
+
 @app.route('/')
 @app.route('/catalog/')
 def showCatalogs():
@@ -328,7 +332,7 @@ def newCatalog():
         newCatalog = Catalog(
             name=request.form['name'], user_id=login_session['user_id'])
         session.add(newCatalog)
-        # flash('New Restaurant %s Successfully Created' % newRestaurant.name)
+        flash('New Catalog %s Successfully Created' % newCatalog.name)
         session.commit()
         return redirect(url_for('showCatalogs'))
     else:
@@ -347,7 +351,7 @@ def editCatalog(catalog_id):
     if request.method == 'POST':
         if request.form['name']:
             editedCatalog.name = request.form['name']
-            # flash('Restaurant Successfully Edited %s' % editedRestaurant.name)
+            flash('Catalog Successfully Edited %s' % editedCatalog.name)
             return redirect(url_for('showCatalogs'))
     else:
         return render_template('editCatalog.html', catalog=editedCatalog)
@@ -365,7 +369,7 @@ def deleteCatalog(catalog_id):
         return "<script>function myFunction() {alert('You are not authorized to delete this restaurant. Please create your own restaurant in order to delete.');}</script><body onload='myFunction()'>"
     if request.method == 'POST':
         session.delete(catalogToDelete)
-        # flash('%s Successfully Deleted' % restaurantToDelete.name)
+        flash('%s Successfully Deleted' % catalogToDelete.name)
         session.commit()
         return redirect(url_for('showCatalogs', catalog_id=catalog_id))
     else:
@@ -389,7 +393,7 @@ def newCatalogItem(catalog_id):
             user_id=catalog.user_id)
         session.add(newItem)
         session.commit()
-        # flash('New Menu %s Item Successfully Created' % (newItem.name))
+        flash('New Catalogs %s Item Successfully Created' % (newItem.name))
         return redirect(url_for('showItem', catalog_id=catalog_id))
     else:
         return render_template('newcatalogitem.html', catalog_id=catalog_id)
