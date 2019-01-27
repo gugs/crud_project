@@ -393,7 +393,7 @@ def editMenuItem(catalog_id, item_id):
         session.add(editedItem)
         session.commit()
         flash("Catalog's Item Successfully Edited")
-        return redirect(url_for('showMenu', catalog_id=catalog_id))
+        return redirect(url_for('showItem', catalog_id=catalog_id))
     else:
         return render_template('editcatalogitem.html', catalog_id=catalog_id, item_id=item_id, item=editedItem)
     
