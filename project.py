@@ -418,7 +418,7 @@ def disconnect():
         return redirect(url_for('showCatalogs'))
     else:
         flash("You were not logged in")
-        return redirect(url_for('showRestaurants'))
+        return redirect(url_for('showCatalogs'))
 
 
 if __name__ == '__main__':
