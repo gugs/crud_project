@@ -1,21 +1,46 @@
-# OAuth2.0
-Starter Code for Auth&amp;Auth course
-# Installing the Vagrant VM for ud330 - Authentication & Authorization
+# Catalog App
 
-**Note: If you already have a vagrant machine installed from previous Udacity courses skip to the 'Fetch the Source Code and VM Configuration' section**
+O Catalog app visa resolver o problema de catalogação de itens com a descrição. O app oferece controle de autenticação e autorização nas operações de criação, edição, atualização e deleção de registros. 
 
-In Lessons 2,3 and 4 of this course, you'll use a virtual machine (VM) to run a web server and a web app that uses it. The VM is a Linux system that runs on top of your own machine.  You can share files easily between your computer and the VM.
+## Features do App
 
-We're using the Vagrant software to configure and manage the VM. Here are the tools you'll need to install to get it running:
+Por meio do app, o usuário pode criar categorias diversas a fim de catalogar itens. Cada categoria pode contemplar vários itens. Cada item catalogado contém uma descrição. O app também oferece uma API externa utilizando REST para consulta. 
 
-### Git
+## Authentication and Authorization
 
-If you don't already have Git installed, [download Git from git-scm.com.](http://git-scm.com/downloads) Install the version for your operating system.
+Os recursos do CRUD têm controle de autenticação e autorização.
 
-On Windows, Git will provide you with a Unix-style terminal and shell (Git Bash).  
-(On Mac or Linux systems you can use the regular terminal program.)
+Os seguintes recursos requerem autenticação:
 
-You will need Git to install the configuration for the VM. If you'd like to learn more about Git, [take a look at our course about Git and Github](http://www.udacity.com/course/ud775).
+- CREATE (Autenticação)
+- READ (Não Requer)
+- UPDATE (Autenticação e Autorização)
+- DELETE (Autenticação e Autorização)
+
+Os usuários apenas estão aptos a atualizarem ou deletarem os itens e categorias de sua autoria. Para visualizarem os registros, usuários não autenticados ou autenticados podem visualizar o conteúdo armazenado.
+
+## JSON API
+
+O Catalog app contem uma API padrão rest para consulta por terceiros. Abaixo, URLs da interface:
+
+Substitua as TAGs com os dados necessários:
+
+<address>: Endereço de host ou DNS
+<port>: Porta do socket
+<id_catalog>: ID do catálogo
+<id_item>: ID do item de um dado catálogo
+
+- Consulta do catálogo principal: http://<address>:<port>/catalog/JSON
+- Consulta de itens por catálogo: http://<address>:<port>/catalog/<id_catalog>/items/JSON
+- Consulta da descrição do item: http://<address>:<port>/catalog/<id_catalog>/items/<id_item>/JSON
+
+
+# Requirements and Installation (Only in English) by Udacity (Adjusted by Gustavo)
+
+
+## Requirements
+
+Para instalar o Catalog App, basta instalar os seguintes aplicativos descritos:
 
 ### VirtualBox
 
@@ -29,23 +54,19 @@ Vagrant is the software that configures the VM and lets you share files between 
 
 **Windows Note:** The Installer may ask you to grant network permissions to Vagrant or make a firewall exception. Be sure to allow this.
 
-## Fetch the Source Code and VM Configuration
+### Git
 
-**Windows:** Use the Git Bash program (installed with Git) to get a Unix-style terminal.  
-**Other systems:** Use your favorite terminal program.
+If you don't already have Git installed, [download Git from git-scm.com.](http://git-scm.com/downloads) Install the version for your operating system.
 
-From the terminal, run:
+On Windows, Git will provide you with a Unix-style terminal and shell (Git Bash).  
+(On Mac or Linux systems you can use the regular terminal program.)
 
-    git clone https://github.com/udacity/OAuth2.0 oauth
-
-This will give you a directory named **oauth** complete with the source code for the flask application, a vagrantfile, and a bootstrap.sh file for installing all of the necessary tools. 
-
-## Run the virtual machine!
-
-Using the terminal, change directory to oauth (**cd oauth**), then type **vagrant up** to launch your virtual machine.
+Once installed on computer, clone the follow repository to store locally: <https://github.com/gugs/>
 
 
-## Running the Restaurant Menu App
+
+## Installing the Catalog App
+
 Once it is up and running, type **vagrant ssh**. This will log your terminal into the virtual machine, and you'll get a Linux shell prompt. When you want to log out, type **exit** at the shell prompt.  To turn the virtual machine off (without deleting anything), type **vagrant halt**. If you do this, you'll need to run **vagrant up** again before you can log into it.
 
 
@@ -55,6 +76,6 @@ Type **ls** to ensure that you are inside the directory that contains project.py
 
 Now type **python database_setup.py** to initialize the database.
 
-Type **python lotsofmenus.py** to populate the database with restaurants and menu items. (Optional)
+Type **python filldb.py** to populate the database with restaurants and menu items. (Optional)
 
 Type **python project.py** to run the Flask web server. In your browser visit **http://localhost:5000** to view the restaurant menu app.  You should be able to view, add, edit, and delete menu items and restaurants.
