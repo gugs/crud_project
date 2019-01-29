@@ -53,23 +53,26 @@ def fbconnect():
         'web']['app_id']
     app_secret = json.loads(
         open('fb_client_secrets.json', 'r').read())['web']['app_secret']
-    url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' % (
-        app_id, app_secret, access_token)
+    url = ('https://graph.facebook.com/oauth/access_token?grant_type=fb_' +
+           'exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s'
+           % (app_id, app_secret, access_token))
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
 
     # Use token to get user info from API
     userinfo_url = "https://graph.facebook.com/v2.8/me"
     '''
-        Due to the formatting for the result from the server token exchange we have to
-        split the token first on commas and select the first index which gives us the key : value
-        for the server access token then we split it on colons to pull out the actual token value
-        and replace the remaining quotes with nothing so that it can be used directly in the graph
-        api calls
+        Due to the formatting for the result from the server token exchange
+        we have to split the token first on commas and select the first index
+        which gives us the key : value for the server access token then we
+        split it on colons to pull out the actual token value and
+        replace the remaining quotes with nothing so that it can be used
+        directly in the graph api calls
     '''
     token = result.split(',')[0].split(':')[1].replace('"', '')
 
-    url = 'https://graph.facebook.com/v2.8/me?access_token=%s&fields=name,id,email' % token
+    url = ("https://graph.facebook.com/v2.8/me?access_token=%s&fields=" +
+           "name,id,email" % token)
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
     # print "url sent for API access:%s"% url
@@ -84,7 +87,8 @@ def fbconnect():
     login_session['access_token'] = token
 
     # Get user picture
-    url = 'https://graph.facebook.com/v2.8/me/picture?access_token=%s&redirect=0&height=200&width=200' % token
+    url = ("https://graph.facebook.com/v2.8/me/picture?access_token=%s&" +
+           "redirect=0&height=200&width=200" % token)
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
     data = json.loads(result)
@@ -104,7 +108,8 @@ def fbconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += 'style="width: 300px; height: 300px;border-radius: 150px;"'
+    output += '"-webkit-border-radius: 150px;-moz-border-radius: 150px;">'
 
     flash("Now logged in as %s" % login_session['username'])
     return output
@@ -208,7 +213,8 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += 'style="width: 300px; height: 300px;border-radius: 150px;"'
+    output += '"-webkit-border-radius: 150px;-moz-border-radius: 150px;">'
     flash("you are now logged in as %s" % login_session['username'])
     print "done!"
     return output
@@ -308,7 +314,8 @@ def showItem(catalog_id):
     creator = getUserInfo(catalog.user_id)
     items = session.query(CatalogItem).filter_by(
         catalog_id=catalog_id).all()
-    if 'username' not in login_session or creator.id != login_session['user_id']:
+    if ('username' not in login_session or
+       creator.id != login_session['user_id']):
         return render_template(
             'publicmenu.html',
             items=items,
@@ -347,7 +354,9 @@ def editCatalog(catalog_id):
     if 'username' not in login_session:
         return redirect('/login')
     if editedCatalog.user_id != login_session['user_id']:
-        return "<script>function myFunction() {alert('You are not authorized to edit this restaurant. Please create your own restaurant in order to edit.');}</script><body onload='myFunction()'>"
+        return ("<script>function myFunction() {alert('You're not authorized" +
+                "to edit this restaurant. Please create your own restaurantr" +
+                " in ordeto edit.');}</script><body onload='myFunction()'>")
     if request.method == 'POST':
         if request.form['name']:
             editedCatalog.name = request.form['name']
@@ -366,7 +375,10 @@ def deleteCatalog(catalog_id):
     if 'username' not in login_session:
         return redirect('/login')
     if catalogToDelete.user_id != login_session['user_id']:
-        return "<script>function myFunction() {alert('You are not authorized to delete this restaurant. Please create your own restaurant in order to delete.');}</script><body onload='myFunction()'>"
+        return ("<script>function myFunction() {alert('You're not authorized" +
+                " to delete this restaurant. Please create your own" +
+                " restaurant in order to delete.');}" +
+                "</script><body onload='myFunction()'>")
     if request.method == 'POST':
         session.delete(catalogToDelete)
         flash('%s Successfully Deleted' % catalogToDelete.name)
@@ -384,7 +396,10 @@ def newCatalogItem(catalog_id):
         return redirect('/login')
     catalog = session.query(Catalog).filter_by(id=catalog_id).one()
     if login_session['user_id'] != catalog.user_id:
-        return "<script>function myFunction() {alert('You are not authorized to add menu items to this restaurant. Please create your own restaurant in order to add items.');}</script><body onload='myFunction()'>"
+        return ("<script>function myFunction() {alert('You're not authorized" +
+                " to add menu items to this restaurant. Please create your " +
+                " own restaurant in order to add items.');}" +
+                "</script><body onload='myFunction()'>")
     if request.method == 'POST':
         newItem = CatalogItem(
             name=request.form['name'],
@@ -412,7 +427,10 @@ def editMenuItem(catalog_id, item_id):
     editedItem = session.query(CatalogItem).filter_by(id=item_id).one()
     catalog = session.query(Catalog).filter_by(id=catalog_id).one()
     if login_session['user_id'] != catalog.user_id:
-        return "<script>function myFunction() {alert('You are not authorized to edit menu items to this catalog. Please create your own catalog in order to edit items.');}</script><body onload='myFunction()'>"
+        return ("<script>function myFunction() {alert('You're not authorized" +
+                " to edit menu items to this catalog. Please create your " +
+                " own catalog in order to edit items.');}" +
+                "</script><body onload='myFunction()'>")
     if request.method == 'POST':
         if request.form['name']:
             editedItem.name = request.form['name']
@@ -444,7 +462,10 @@ def deleteCatalogItem(catalog_id, item_id):
     catalog = session.query(Catalog).filter_by(id=catalog_id).one()
     itemToDelete = session.query(CatalogItem).filter_by(id=item_id).one()
     if login_session['user_id'] != catalog.user_id:
-        return "<script>function myFunction() {alert('You are not authorized to delete catalog's items to this Catalog. Please create your own Catalog in order to delete items.');}</script><body onload='myFunction()'>"
+        return ("<script>function myFunction() {alert('You're not authorized" +
+                " to delete catalog's items to this Catalog. Please create" +
+                " your own Catalog in order to delete items.');}" +
+                "</script><body onload='myFunction()'>")
     if request.method == 'POST':
         session.delete(itemToDelete)
         session.commit()
