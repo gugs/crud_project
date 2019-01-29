@@ -33,6 +33,66 @@ Substitua as TAGs com os dados necessários:
 - Consulta do catálogo principal: http://<address>:<port>/catalog/JSON
 - Consulta de itens por catálogo: http://<address>:<port>/catalog/<id_catalog>/items/JSON
 - Consulta da descrição do item: http://<address>:<port>/catalog/<id_catalog>/items/<id_item>/JSON
+    
+### Example JSON API Format
+
+http://localhost:8000/catalog.json/<item_name>
+
+Returns the details of a given <item_name>
+
+{
+  "cat_id": 1,
+  "description": "Long description",
+  "id": 1,
+  "name": "Stick"
+}
+http://localhost:8000/catalog.json/
+
+Returns all Categories and Items from the database
+
+[
+  {
+    "id": 1,
+    "items": [
+      {
+        "cat_id": 1,
+        "description": "Long description",
+        "id": 1,
+        "name": "Stick"
+      },
+      {
+        "cat_id": 1,
+        "description": "",
+        "id": 4,
+        "name": "Shinguards"
+      }
+    ],
+    "name": "Soccer"
+  },
+  {
+    "id": 4,
+    "items": [],
+    "name": "Frisbee"
+  },
+  {
+    "id": 5,
+    "items": [
+      {
+        "cat_id": 5,
+        "description": "",
+        "id": 2,
+        "name": "Goggles"
+      },
+      {
+        "cat_id": 5,
+        "description": "",
+        "id": 3,
+        "name": "Snowboard"
+      }
+    ],
+    "name": "Snowboarding"
+  }
+]
 
 
 # Requirements and Installation (Only in English) by Udacity (Adjusted by Gustavo)

@@ -33,6 +33,9 @@ session = DBSession()
 # Create anti-forgery state token
 @app.route('/login')
 def showLogin():
+    """
+    Renders login screen
+    """
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
@@ -42,6 +45,10 @@ def showLogin():
 
 @app.route('/fbconnect', methods=['POST'])
 def fbconnect():
+    """
+    Gathers data from Facebook Sign In API and places it
+    inside a session variable.
+    """
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
@@ -115,6 +122,9 @@ def fbconnect():
 
 @app.route('/fbdisconnect')
 def fbdisconnect():
+    """
+    Ends a facebook's user session
+    """
     facebook_id = login_session['facebook_id']
     # The access token must me included to successfully logout
     access_token = login_session['access_token']
@@ -127,6 +137,10 @@ def fbdisconnect():
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
+    """
+    Gathers data from Google Sign In API and places it
+    inside a session variable.
+    """
     # Validate state token
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
@@ -221,6 +235,9 @@ def gconnect():
 
 
 def createUser(login_session):
+    """
+    Create a new user in the case of record in the DB
+    """
     newUser = User(name=login_session['username'], email=login_session[
                    'email'], picture=login_session['picture'])
     session.add(newUser)
@@ -230,11 +247,17 @@ def createUser(login_session):
 
 
 def getUserInfo(user_id):
+    """
+    Retrieve user object from DB using an ID
+    """
     user = session.query(User).filter_by(id=user_id).one()
     return user
 
 
 def getUserID(email):
+    """
+    Retrieve user's ID from DB using an e-mail
+    """
     try:
         user = session.query(User).filter_by(email=email).one()
         return user.id
@@ -246,6 +269,9 @@ def getUserID(email):
 
 @app.route('/gdisconnect')
 def gdisconnect():
+    """
+    Close an user session login
+    """
     # Only disconnect a connected user.
     access_token = login_session.get('access_token')
     if access_token is None:
@@ -274,6 +300,9 @@ def gdisconnect():
 
 @app.route('/catalog/<int:catalog_id>/items/JSON')
 def restaurantMenuJSON(catalog_id):
+    """
+    JSON API interface to retrieve an items' catalogs list
+    """
     catalog = session.query(Catalog).filter_by(id=catalog_id).one()
     items = session.query(CatalogItem).filter_by(
         catalog_id=catalog_id).all()
@@ -282,12 +311,18 @@ def restaurantMenuJSON(catalog_id):
 
 @app.route('/catalog/<int:catalog_id>/items/<int:item_id>/JSON')
 def menuItemJSON(catalog_id, item_id):
+    """
+    JSON API interface to retrieve data values of catalogs' item
+    """
     catalogItem = session.query(CatalogItem).filter_by(id=item_id).one()
     return jsonify(catalogItem=catalogItem.serialize)
 
 
 @app.route('/catalog/JSON')
 def catalogsJSON():
+    """
+    JSON API interface to retrieve a list of catalogs
+    """
     catalogs = session.query(Catalog).all()
     return jsonify(catalogs=[c.serialize for c in catalogs])
 
@@ -298,6 +333,9 @@ def catalogsJSON():
 @app.route('/')
 @app.route('/catalog/')
 def showCatalogs():
+    """
+    Function to return and render a catalogs list
+    """
     catalogs = session.query(Catalog).order_by(asc(Catalog.name))
     if 'username' not in login_session:
         return render_template('publiccatalog.html', catalogs=catalogs)
@@ -308,6 +346,9 @@ def showCatalogs():
 @app.route('/catalog/<int:catalog_id>/')
 @app.route('/catalog/<int:catalog_id>/item/')
 def showItem(catalog_id):
+    """
+    Function to return and render a catalogs' items list
+    """
     catalog = session.query(Catalog).filter_by(id=catalog_id).one()
     creator = getUserInfo(catalog.user_id)
     items = session.query(CatalogItem).filter_by(
@@ -331,6 +372,10 @@ def showItem(catalog_id):
 
 @app.route('/catalog/new/', methods=['GET', 'POST'])
 def newCatalog():
+    """
+    Function to render a new catalogs' page and store it
+    case performed
+    """
     if 'username' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
@@ -348,6 +393,10 @@ def newCatalog():
 
 @app.route('/catalog/<int:catalog_id>/edit/', methods=['GET', 'POST'])
 def editCatalog(catalog_id):
+    """
+    Function to render a catalogs' edit page and store
+    the changes case performed
+    """
     editedCatalog = session.query(Catalog).filter_by(id=catalog_id).one()
     if 'username' not in login_session:
         return redirect('/login')
@@ -368,6 +417,10 @@ def editCatalog(catalog_id):
 
 @app.route('/catalog/<int:catalog_id>/delete/', methods=['GET', 'POST'])
 def deleteCatalog(catalog_id):
+    """
+    Function to render a catalogs' delete page and remove
+    the record from DB case performed
+    """
     catalogToDelete = session.query(
         Catalog).filter_by(id=catalog_id).one()
     if 'username' not in login_session:
@@ -390,6 +443,10 @@ def deleteCatalog(catalog_id):
 
 @app.route('/catalog/<int:catalog_id>/item/new/', methods=['GET', 'POST'])
 def newCatalogItem(catalog_id):
+    """
+    Function to render a new catalogs' item page and store it
+    case performed
+    """
     if 'username' not in login_session:
         return redirect('/login')
     catalog = session.query(Catalog).filter_by(id=catalog_id).one()
@@ -420,6 +477,10 @@ def newCatalogItem(catalog_id):
         'GET',
         'POST'])
 def editMenuItem(catalog_id, item_id):
+    """
+    Function to render an edit page of catalogs'
+    item and update it case performed
+    """
     if 'username' not in login_session:
         return redirect('/login')
     editedItem = session.query(CatalogItem).filter_by(id=item_id).one()
@@ -446,7 +507,7 @@ def editMenuItem(catalog_id, item_id):
             item=editedItem)
 
 
-# Delete a menu item
+# Delete a catalog item
 
 
 @app.route(
@@ -455,6 +516,10 @@ def editMenuItem(catalog_id, item_id):
         'GET',
         'POST'])
 def deleteCatalogItem(catalog_id, item_id):
+    """
+    Function to render an delete page of catalogs'
+    item and remove it case performed
+    """
     if 'username' not in login_session:
         return redirect('/login')
     catalog = session.query(Catalog).filter_by(id=catalog_id).one()
@@ -476,6 +541,10 @@ def deleteCatalogItem(catalog_id, item_id):
 # Disconnect based on provider
 @app.route('/disconnect')
 def disconnect():
+    """
+    The root function to close open session independent
+    of oauth provider
+    """
     if 'provider' in login_session:
         if login_session['provider'] == 'google':
             gdisconnect()
